@@ -30,6 +30,7 @@ function searchArray(property, value) {
 tabs.on('ready', function(tab){	 //ignores back forward need to intergrate pageshow
 
   searchArray("website", getWebsiteName())? updateEntry() : newEntry();
+  var uiAttached = false;
 
   function naming(){
 		var n = getWebsiteName();
@@ -106,7 +107,6 @@ tabs.on('ready', function(tab){	 //ignores back forward need to intergrate pages
     }
 
     this.isOn = false;
-    this.uiAttached = false; 
 
     this.start = function() {
       if (!this.isOn) {
