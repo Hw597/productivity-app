@@ -106,13 +106,19 @@ tabs.on('ready', function(tab){	 //ignores back forward need to intergrate pages
     }
 
     this.isOn = false;
+    this.uiAttached = false; 
 
     this.start = function() {
       if (!this.isOn) {
         // UI Insertion
-        worker = tab.attach({
-          contentScriptFile: self.data.url("interactivity.js")
-        });
+        // probably should seperate concerns later
+        if (!this.uiAttached) {
+          worker = tab.attach({
+            contentScriptFile: self.data.url("interactivity.js")
+          })
+          this.uiAttached = true
+        ;}
+        
         console.log("count has started");
         interval = setInterval(update.bind(this), 1000); 
         offset = Date.now();
@@ -126,7 +132,10 @@ tabs.on('ready', function(tab){	 //ignores back forward need to intergrate pages
         clearInterval(interval);
         interval = null;
         this.isOn = false;
-        console.log("count has stopped"); 
+        console.log("count has stopped");
+
+        //UI clear
+        worker.port.emit("time_spent", ""); 
       }
     }
 
@@ -139,15 +148,15 @@ tabs.on('ready', function(tab){	 //ignores back forward need to intergrate pages
     
     tabs.activeTab.url === tab.url? this.start() : this.stop(); // need a way t turn this off on leaving page
       
-    tabs.on("activate", function(tab) {
+    tabs.activeTab.on("activate", function(tab) {
      ss.storage[naming()]["timer"].start();
     })
 
-    tabs.on("deactivate", function(tab) {
+    tabs.activeTab.on("deactivate", function(tab) {
       ss.storage[naming()]["timer"].stop();
     })
 
-    tabs.on("close", function(tab) {
+    tabs.activeTab.on("close", function(tab) {
       ss.storage[naming()]["timer"].stop();
     })
   }
