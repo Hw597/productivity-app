@@ -7,6 +7,7 @@ self.port.on("time_spent", function(message){
 
 display.setAttribute("id","displayText");
 display.style.cssText = 
+    " margin: 25px 30px;" +
     " opacity:0.5;" +
     " color:Blue;" +
     " font-family:'Geneva';" +
@@ -22,6 +23,7 @@ document.getElementById("displayText").addEventListener("click", function(){
 function blueText() {
     isBlue = true;
     display.style.cssText = 
+        " margin: 25px 30px;" +
         " opacity:0.5;" +
         " color:Blue;" +
         " font-family:'Geneva';" +
@@ -32,6 +34,7 @@ function blueText() {
 function whiteText() {
     isBlue = false;
     display.style.cssText = 
+        " margin: 25px 30px;" +
         " opacity:0.5;" +
         " color: White;" +
         " font-family:'Geneva';" +

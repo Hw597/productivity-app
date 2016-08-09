@@ -1,0 +1,16 @@
+{
+  "title": "Productivity App",
+  "name": "productivityapp",
+  "version": "0.0.1",
+  "description": "Records and visualises the amount of time spent on each visited website",
+  "main": "index.js",
+  "author": "Henry Wartemberg",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jetpack"
+  ]
+}

@@ -3,80 +3,143 @@ var tabs = require("sdk/tabs");
 var ss = require("sdk/simple-storage");
 var { setInterval, clearInterval } = require("sdk/timers");
 var self = require("sdk/self");
+var isLive = false;
  
 // Load or Create persistent array that will act as a history
 if (!ss.storage.browsingHistory){
-	 ss.storage.browsingHistory = [];
+    ss.storage.browsingHistory = [];
 }
 
-// function to search specific array for property and value of choice
+// GLOBAL FUNCTIONS
 function searchArray(property, value) {
-	for (i = 0; i < ss.storage.browsingHistory.length; i++) {
+  for (i = 0; i < ss.storage.browsingHistory.length; i++) {
     
     if (value === ss.storage.browsingHistory[i][property]){ 
-      console.log("MATCH FOUND " + ss.storage.browsingHistory[i][property]);
+      console.log("MATCH FOUND" + ss.storage.browsingHistory[i][property]);
       return true;
       break;
-    } 
+    }
 
     else if (i === ss.storage.browsingHistory.length -1){
       console.log("NO MATCH FOUND");
       return false;
     }
-	}
+  }
 }
 
-//event listener new page? - search array, create or updateEntry
-tabs.on('ready', function(tab){	 //ignores back forward need to intergrate pageshow
+function naming(element){
+  var n = getWebsiteName(element);
+  return n.replace(/\.|-/g,"_");
+}
 
-  searchArray("website", getWebsiteName())? updateEntry() : newEntry();
-  var uiAttached = false;
+function getWebsiteName(element){
+  let n = element.url;
+  let n1 = n.toString();
+  let n2 = n1.replace(/^.*\/\//,"");
+  let site = n2.replace(/\/.*$/,"");
+  return site.toString()
+}// GLOBAL FUNCTONS END.
 
-  function naming(){
-		var n = getWebsiteName();
-		return n.replace(/\.|-/g,"_");
-	}
+tabs.on('ready', function(tab){
+  console.log("this is working");
+// APPLICATION LOGIC
+  //tab centric object wlll handle communicating to UI (prob not best practice will go back and seperate concerns later)
+  if (!tab.worker) {
+    console.log("worker is about to be reset");
+    tab.worker;
+  }; 
 
-	function getWebsiteName(){
-		let n = tab.url;
-    let n1 = n.toString();
-		let n2 = n1.replace(/^.*\/\//,"");
-		let site = n2.replace(/\/.*$/,"");
-		return site.toString()
-	}
+  //checks if tab has an attached ui instance. If not it attaches one with "ui" function.
+  if (uiAttached === undefined) {
+    console.log("tab.uiAttached is about to be reset"); 
+    var uiAttached = false;
+  }
+  searchArray("website", getWebsiteName(tab))? updateEntry() : newEntry();
 
-	function entryConstructor(){
+  // FUNCIONS FOR APPLICATION LOGIC
+  function newEntry(){
+    console.log("newEntry should be being created");
+    function f() {
+      ss.storage[naming(tab)] = new entryConstructor;
+      return ss.storage[naming(tab)];  
+    }
+    ui("pDesignation");
+    tab.worker.port.on("productive", function(response){
+      ss.storage[naming(tab)]["productive"] = response;
+      ui("timer")
+    })
+    ss.storage.browsingHistory.push(f());
+    console.log(ss.storage.browsingHistory);
+  }
+
+  function updateEntry(){
+    ui("timer");
+    ss.storage[naming(tab)]["lastVisited"] = new Date;
+  }
+
+// USER INTERFACE (VIEW)  
+
+  /*function that attaches a seperatejs script to the tab.
+  script creates a transparent, draggable div in which the time will be pushed */
+  function ui(type) {
+    if (type === "blank") {
+      console.log("attaching a new UI instancce")
+      tab.worker = tab.attach({
+        contentScriptFile: [
+          self.data.url("interfaceFrame.js"),
+          self.data.url("draggability.js")
+        ]
+      });
+
+    } 
+    else if (type==="pDesignation") {
+      console.log("prompting for website designation");
+      tab.worker = tab.attach({
+        contentScriptFile: [
+          self.data.url("interfaceFrame.js"),
+          self.data.url("prompt.js")
+        ]
+      });
+    }
+    else if (type==="timer"){
+      console.log("attaching a new UI instancce")
+      tab.worker = tab.attach({
+        contentScriptFile: [
+          self.data.url("clear.js"),
+          self.data.url("interfaceFrame.js"),
+          self.data.url("draggability.js"),
+          self.data.url("timerText.js"),
+          self.data.url("idleTimeWatcher.js")
+        ]
+      })
+      uiAttached = true;    
+    }
+  }
+// USER INTERFACE OVER (VIEW)
+
+//MODEL
+  function entryConstructor(){
+    this.website = getWebsiteName(tab);
     this.timeSpentD = 0;
-    this.timer = new clock;   
-    this.url = tab.url;
-    this.website = getWebsiteName();
-    // this.designation = BoP() ,
+    this.url = tab.url;   
+    this.productive;
     this.lastVisited = new Date;
     // this.timeSpent_w = timeSpent_w,
     // this.timeSpent_m = timeSpent_m,
-  }
+  }// CONSTRUCTOR ENDING  
 
-  // timer stuff	
-  function clock (){
+//CONTROLLER
+  var interval; //how often timer function will be called (every second)
+  var offset;
 
-    var time = 0; //overall time variable secured behind closure
-
-    var interval; //how often the update will be called (every second)
-    var offset; //obvious
-    var formattedTime; //the time in a readable format
-    var worker; //global object wlll handle communicating to UI (prob not best practice will go back and seperate concerns later)
-
-    function update() {
-      if (this.isOn) {
-        var timePassed = delta();
-        time += timePassed; 
-      }
-      formattedTime = timeFormatter(time);
-      worker.port.emit("time_spent", formattedTime);
+  function timer(e){ //change name to timing engine   
+    if (e === "start"){
+      update();
     }
-
-    function timeStore () {
-      ss.storage[naming()]["timeSpentD"] = time;
+    
+    function update() {
+      var timePassed = delta();
+      ss.storage[naming(tabs.activeTab)]["timeSpentD"] += timePassed; 
     }
 
     function delta() {
@@ -86,92 +149,64 @@ tabs.on('ready', function(tab){	 //ignores back forward need to intergrate pages
       return timePassed;
     }
 
-    function timeFormatter(timeInMilliseconds) {
-      var time = new Date(timeInMilliseconds);
-      var hours = time.getHours().toString();
-      var minutes = time.getMinutes().toString();
-      var seconds = time.getSeconds().toString();
-
-      if (hours.length < 2) {
-        hours = "0" + hours;
-      }
-    
-      if (minutes.length < 2) {
-        minutes = "0" + minutes;
-      }
-
-      if (seconds.length < 2) {
-        seconds = "0" + seconds;
-      }
-      return minutes + ':' + seconds; // hours + ':' + minutes; (release stage)
-    }
-
-    this.isOn = false;
-
-    this.start = function() {
-      if (!this.isOn) {
-        // UI Insertion
-        // probably should seperate concerns later
-        if (!this.uiAttached) {
-          worker = tab.attach({
-            contentScriptFile: self.data.url("interactivity.js")
-          })
-          this.uiAttached = true
-        ;}
-        
-        console.log("count has started");
-        interval = setInterval(update.bind(this), 1000); 
-        offset = Date.now();
-        this.isOn = true;
-      }
-    }
-
-    this.stop = function() {
-      if (this.isOn) {
-        timeStore();
-        clearInterval(interval);
-        interval = null;
-        this.isOn = false;
-        console.log("count has stopped");
-
-        //UI clear
-        worker.port.emit("time_spent", ""); 
-      }
-    }
-
     function reset() {
       time = 0;
       update();
+    }           
+  }
+  //TIMER ENDING
+ 
+ function timeFormatter(timeInMilliseconds) {
+    var time = new Date(timeInMilliseconds);
+    var hours = time.getHours().toString();
+    var minutes = time.getMinutes().toString();
+    var seconds = time.getSeconds().toString();
+    if (hours.length < 2) {
+      hours = "0" + hours;
     }
-// event watching, Follows on from tab ready
-//initializing timer. When clock is created check if activeTab? otherwise listen for activate event
-    
-    tabs.activeTab.url === tab.url? this.start() : this.stop(); // need a way t turn this off on leaving page
-      
-    tabs.activeTab.on("activate", function(tab) {
-     ss.storage[naming()]["timer"].start();
-    })
 
-    tabs.activeTab.on("deactivate", function(tab) {
-      ss.storage[naming()]["timer"].stop();
-    })
+    if (minutes.length < 2) {
+      minutes = "0" + minutes;
+    }
 
-    tabs.activeTab.on("close", function(tab) {
-      ss.storage[naming()]["timer"].stop();
-    })
+    if (seconds.length < 2) {
+      seconds = "0" + seconds;
+    }
+    return minutes + ':' + seconds; // hours + ':' + minutes; (release stage)
   }
 
-	function newEntry(){
-		function f () {
-			ss.storage[naming()] = new entryConstructor;
-      return ss.storage[naming()];
-		}
-		ss.storage.browsingHistory.push(f());
-    console.log(ss.storage.browsingHistory);
-	}
-
-	function updateEntry(){
-    ss.storage[naming()]["lastVisited"] = new Date;
-    ss.storage[naming()]["timer"].start();
+  //function that pushes the time into the UI(Behind closure)
+  function uiUpdater() {    
+    var activeTime = timeFormatter(ss.storage[naming(tabs.activeTab)]["timeSpentD"]);
+    tabs.activeTab.worker.port.emit("time_spent", activeTime);
+    console.log(activeTime);     
   }
-})  
+
+  // CONTROL FUNCTIONS
+  appStart = function() {
+    offset = Date.now();
+    f= function(){
+      timer("start");
+      uiUpdater();
+    }
+    interval = setInterval(f, 1000);
+    console.log("count has started");
+  }
+  
+  appStop = function() {
+    clearInterval(interval);
+    interval = null;
+    console.log("count has stopped");
+    //UI clear
+    tabs.activeTab.worker.port.emit("time_spent", "");
+  } //CONTROL FUNCTIONS ENDING
+//CONTROLLER ENDING
+
+//CONTROLLER ACTIVATION BaBy!!!!
+  if (!isLive){
+    isLive = true;
+    appStart(); 
+  }
+})
+
+
