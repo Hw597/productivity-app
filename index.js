@@ -1,4 +1,5 @@
 // Dependencies
+//practice change
 var tabs = require("sdk/tabs");
 var ss = require("sdk/simple-storage");
 var { setInterval, clearInterval } = require("sdk/timers");
