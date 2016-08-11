@@ -1,0 +1,31 @@
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mdeleted file mode 100644[m
+[1mindex 8356f3f..0000000[m
+[1m--- a/.gitignore[m
+[1m+++ /dev/null[m
+[36m@@ -1,2 +0,0 @@[m
+[31m-/older versions[m
+[31m-/interface[m
+\ No newline at end of file[m
+[1mdiff --git a/index.js b/index.js[m
+[1mindex 22bddc1..8057fbf 100644[m
+[1m--- a/index.js[m
+[1m+++ b/index.js[m
+[36m@@ -26,6 +26,7 @@[m [mfunction searchArray(property, value) {[m
+     }[m
+   }[m
+ }[m
+[32m+[m[32m//experimental change[m
+ [m
+ function naming(element){[m
+   var n = getWebsiteName(element);[m
+[36m@@ -40,6 +41,7 @@[m [mfunction getWebsiteName(element){[m
+   return site.toString()[m
+ }// GLOBAL FUNCTONS END.[m
+ [m
+[32m+[m
+ tabs.on('ready', function(tab){[m
+   console.log("this is working");[m
+ // APPLICATION LOGIC[m
+warning: LF will be replaced by CRLF in index.js.
+The file will have its original line endings in your working directory.
