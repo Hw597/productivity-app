@@ -3,6 +3,7 @@ var tabs = require("sdk/tabs");
 var ss = require("sdk/simple-storage");
 var { setInterval, clearInterval } = require("sdk/timers");
 var self = require("sdk/self");
+var pageMod = require("sdk/page-mod");
 var isLive = false;
  
 // Load or Create persistent array that will act as a history
@@ -90,13 +91,37 @@ tabs.on('ready', function(tab){
           self.data.url("draggability.js")
         ]
       });
-
     } 
     else if (type==="pDesignation") {
       console.log("prompting for website designation");
       tab.worker = tab.attach({
         contentScriptFile: [
           self.data.url("MonoPt.js")
+        ]
+      });
+      pageMod.PageMod({
+        include: "*",
+        contentStyle: [
+          "@font-face { font-family: 'PT Sans', sans-serif; src: url(https://fonts.googleapis.com/css?family=PT+Sans);}",
+
+          "#webName {font-size: 25pt; }",
+
+          "#rWstroke, #yButton, #nButton, .invisibleW { fill: #FFFFFF; }",
+
+          "#qMarkFill, #qMarkStroke, #rWfill { fill: #666666; }",
+
+          "#yStroke, #nStroke {stroke: #FFFFFF; stroke-width: 2; stroke-miterlimit: 10; width: 139; height: 57; }",
+
+          "#SVGID_1_ { stroke: #666666; fill: none; stroke-width: 2; stroke-miterlimit: 10; }",
+
+          ".NOt { fill : #993300; }",
+          ".YESt { fill : #006699; }",
+
+          "#nButton:hover ~ #nStroke { stroke: #993300; }",
+          ".NOt:hover ~ #nStroke { stroke: #993300; }",
+
+          "#yButton:hover ~ #yStroke { stroke: #006699; }",
+          ".YESt:hover ~ #yStroke { stroke: #006699; }"
         ]
       });
     }
