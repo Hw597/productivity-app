@@ -1,0 +1,53 @@
+@font-face {
+    font-family: 'PT Sans', sans-serif;
+    src: url(https://fonts.googleapis.com/css?family=PT+Sans);
+}
+
+#Layer_1 {
+	-webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 60%;
+    height: 60%;
+}
+
+.qText { 
+    font-family: 'PT Sans', sans-serif;
+    font-size: 15pt;
+}
+
+#webName {
+    font-size: 25pt;
+}
+
+#rWstroke, #yButton, #nButton, .invisibleW {
+    fill: #FFFFFF;
+}
+
+#qMarkFill, #qMarkStroke, #rWfill { 
+    fill: #666666; 
+}
+
+#SVGID_1_ { 
+    stroke: #666666;
+    fill: #FFFFFF; 
+    stroke-width: 2; 
+    stroke-miterlimit: 10;
+    -webkit-box-shadow: 0px 10px 0px 0px rgba(0,0,0,0.75), ;
+   	-moz-box-shadow: 0px 10px 0px 0px rgba(0,0,0,0.75);
+   	box-shadow: 0px 10px 0px 0px rgba(0,0,0,0.75);
+}
+
+.NOt { fill : #993300; }
+.YESt { fill : #006699; }
+
+#nButton:hover ~ #nStroke { stroke: #993300; }
+.NOt:hover ~ #nStroke { stroke: #993300; }
+
+#yButton:hover ~ #yStroke { stroke: #006699; }
+.YESt:hover ~ #yStroke { stroke: #006699; }

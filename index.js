@@ -96,8 +96,7 @@ tabs.on('ready', function(tab){
       console.log("prompting for website designation");
       tab.worker = tab.attach({
         contentScriptFile: [
-          self.data.url("interfaceFrame.js"),
-          self.data.url("prompt.js")
+          self.data.url("MonoPt.js")
         ]
       });
     }
