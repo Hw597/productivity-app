@@ -100,7 +100,7 @@ tabs.on('ready', function(tab){
           self.data.url("MonoPt.js")
         ]
       });
-      
+      /*
       pageMod.PageMod({
         include: "*",
         //contentScriptFile: self.data.url("MonoPt.js"),
@@ -121,6 +121,7 @@ tabs.on('ready', function(tab){
           ".YESt:hover ~ #yStroke { stroke: #006699; }"
         ]
       });
+      */
     }
     else if (type==="timer"){
       console.log("attaching a new UI instancce")
