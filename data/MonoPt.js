@@ -25,8 +25,9 @@ document.body.appendChild(bFE);
     Layer_1.setAttribute('viewBox', '0 0 480 640');
     Layer_1.setAttribute('enable-background', 'new 0 0 480 640');
     Layer_1.setAttribute('xml:space', 'preserve');
+   /*
     Layer_1.style.cssText =
-        " position: fixed;"
+        + " position: fixed;"
         + " margin: auto;"
         + " top: 0;" 
         + " right: 0;"
@@ -34,51 +35,50 @@ document.body.appendChild(bFE);
         + " left: 0;"
         + " width: 65%;"
         + " height: 65%;";
+    */
     bFE.appendChild(Layer_1);
+        
+        function appendStyle(styles) {
+            var css = document.createElementNS(xmlns,'style');
+            css.setAttribute('type', 'text/css');
 
+            if (css.styleSheet) { 
+                css.styleSheet.cssText = styles;
+            } else { 
+                css.appendChild(document.createTextNode(styles));
+            }
+
+            document.getElementsByTagName("head")[0].appendChild(css);
+            //bFE.appendChild(css);
+        }
+
+        var styles = 
+        " @font-face { font-family: 'PT Sans', sans-serif; src: url('https://fonts.googleapis.com/css?family=PT+Sans');}"
+        + " #Layer_1 { position: fixed; margin: auto; top: 0; right: 0; bottom: 0; left: 0; width: 35%; height: 60%;}"
+        + " .qText { font-family: 'PT Sans', sans-serif; font-size: 15pt; }"
+        + " #webName { font-size: 45pt; }"
+        + " #rWstroke, #yButton, #nButton, .invisibleW { fill: #FFFFFF; }"
+        + " #qMarkFill, #qMarkStroke, #rWfill { fill: #666666; }"
+
+        + "#yStroke, #nStroke { stroke: #FFFFFF; stroke-width: 2; stroke-miterlimit: 10; width: 139px; height: 57px;} "
+        + "#SVGID_1_ { stroke: #666666; fill: none; stroke-width: 2; stroke-miterlimit: 10; }"
+        + ".NOt { fill : #993300; } "
+        + ".YESt { fill : #006699; } "
+
+        + "#nButton:hover ~ #nStroke { stroke: #993300; } "
+        + ".NOt:hover ~ #nStroke { stroke: #993300; } "
+
+        + "#yButton:hover ~ #yStroke { stroke: #006699; } "
+        + ".YESt:hover ~ #yStroke { stroke: #006699; } ";
+
+        appendStyle(styles);
+        
+        /*
         var styley = document.createElementNS(xmlns, 'style');
         styley.setAttribute('type', 'text/css');
-        styley.cssText = 
-        //"<![CDATA["
-        + " @font-face { font-family: 'PT Sans', sans-serif;"
-        + " src: url(https://fonts.googleapis.com/css?family=PT+Sans); }"
-
-        + ".qText { "
-        + "  font-family: 'PT Sans', sans-serif;"
-        + "  font-size: 15pt; }"
-
-        + "#webName {font-size: 25pt; }"
-
-        + "#rWstroke, #yButton, #nButton, .invisibleW { fill: #FFFFFF; }"
-
-        + "#qMarkFill, #qMarkStroke, #rWfill { fill: #666666; }"
-
-        + " #yStroke, #nStroke { "       
-        +   "stroke: #FFFFFF;" 
-        +   "stroke-width: 2;" 
-        +   "stroke-miterlimit: 10;" 
-        +   "width: 139;" 
-        +   "height: 57;} "
-
-
-
-        + "#SVGID_1_ { "
-        + " stroke: #666666;"
-        + " fill: none; "
-        + " stroke-width: 2; "
-        + " stroke-miterlimit: 10; }"
-
-
-        + " .NOt { fill : #993300; } "
-        + " .YESt { fill : #006699; } "
-
-        + " #nButton:hover ~ #nStroke { stroke: #993300; } "
-        + " .NOt:hover ~ #nStroke { stroke: #993300; } "
-
-        + " #yButton:hover ~ #yStroke { stroke: #006699; } "
-        + " .YESt:hover ~ #yStroke { stroke: #006699; } ";
-        //+ " ]]>";
+        styley.innerHTML = 
         Layer_1.appendChild(styley);
+        */
 
         var rWfill = document.createElementNS(xmlns, 'polygon');
         rWfill.setAttribute('class', 'responseWrap');
@@ -133,8 +133,8 @@ document.body.appendChild(bFE);
         yButton.setAttribute('y', '544');
         yButton.setAttribute('class', 'YES');
         yButton.setAttribute('id', 'yButton');
-        yButton.setAttribute('width', '128');
-        yButton.setAttribute('height', '42');
+        yButton.setAttribute('width', '128px');
+        yButton.setAttribute('height', '42px');
         Layer_1.appendChild(yButton);
 
         var Y = document.createElementNS(xmlns, 'path');
@@ -179,6 +179,7 @@ document.body.appendChild(bFE);
         var yStroke = document.createElementNS(xmlns, 'rect');
         yStroke.setAttribute('class', 'YES');
         yStroke.setAttribute('x', '41');
+        yStroke.setAttribute('id', 'yStroke');
         yStroke.setAttribute('y', '537');
         yStroke.setAttribute('class', 'YES');
         yStroke.setAttribute('width', '139');
